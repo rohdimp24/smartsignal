@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+
+<style type="text/css">
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="Scripts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="Scripts/autocomplete/assets/skins/sam/autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="Scripts/bmtcV2.css" />
+
+<script type="text/javascript" src="Scripts/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="Scripts/connection-min.js"></script>
+<script type="text/javascript" src="Scripts/animation-min.js"></script>
+<script type="text/javascript" src="Scripts/datasource-min.js"></script>
+<script type="text/javascript" src="Scripts/bmtcSearchExtended.js"></script>
+<script type="text/javascript" src="Scripts/browserDetect.js"></script>
+<link rel="stylesheet" href="css/jquery.ui.all.css">
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery.ui.core.js"></script>
+<script src="js/jquery.ui.widget.js"></script>
+<script src="js/jquery.ui.position.js"></script>
+<script src="js/jquery.ui.menu.js"></script>
+<script src="js/jquery.ui.autocomplete.js"></script>
+<link rel="stylesheet" href="css/demos.css">
+<link rel="stylesheet" href="css/bootstrap.css" />
+
+<style>
+	.ui-autocomplete-loading {
+		background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat;
+	}
+	#src,#dest { width: 25em; }
+	.infoWindow {
+    max-width: 250px;
+	}
+	.boldStop
+	{
+		font-size:1.5em;
+		font-weight:bold
+		
+	}
+	#txtSourceAddress,#txtDestinationAddress
+	{
+		width:200px;
+	}
+
+	h3{
+		color:black;
+	}
+	</style>
+<script>
+var browserName=BrowserDetect.browser;
+if(browserName=="Explorer")
+{
+	alert("Kindly use Firefox or Chrome...Internet Explorer is not supported for now.");
+
+}
+</script>
+<script type="text/javascript" src="Scripts/autocomplete/autocomplete-min.js"></script>
+
+
+<!--<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA1c1sWAqiVfYVo2H2uZO3DRSdbZxIVjTSMKDiD-iCCeLYxJJn_BTfNn4DtNyckPujCTOcXysH3Glq9g"
+        type="text/javascript"></script>
+    <script type="text/javascript" src="Scripts/yelpMap.js"> </script>
+-->
+
+</script>
+<script type="text/javascript" src="Scripts/autocomplete/autocomplete-min.js"></script>
+<!--<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA1c1sWAqiVfYVo2H2uZO3DRSdbZxIVjTSMKDiD-iCCeLYxJJn_BTfNn4DtNyckPujCTOcXysH3Glq9g"
+        type="text/javascript"></script>-->
+
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
+<script type="text/javascript" src="Scripts/yelpMap.js"> </script>
+
+
+</head>
+<body>
+
+
+<div id="maincontainer">
+<br/>
+
+<a href="../ssDashboard.php">Back to dashboard</a>
+<H1> NGram and Collocation Analysis Demo </H1><br/>
+
+<div id="SearchForm">
+
+    <!-- <form name="myForm" onsubmit="DisplayStopNames(); return false;">      -->
+   
+     <!-- <input type="submit" value="Get Quote" />-->
+	<table>
+	<tr>
+	<td>
+	
+	<div class="textBox">
+	 <h3>NGrams</h3>
+	 </div>
+	 </td>
+	 <td>
+   	<div id="originAutoComplete">		
+		<input id="txtSourceAddress" name="txtSourceAddress" type="text">		
+		<div id="suggestionSourceContainer"></div>
+	  </div>
+	  </td>	  
+  <td>
+  <div class="textBox">
+	<h3> Collocations </h3>
+	</div>
+	</td>
+	<td>
+	<div id="destinationAutoComplete">		
+		<input id="txtDestinationAddress" style="color:#FFFF" name="txtDestinationAddress" type="text">		
+		<div id="suggestionDestContainer"></div>
+	</div>
+	</td>
+	<td>
+	 </td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+
+$(function() {
+		function log( message ) {
+			$( "<div>" ).text( message ).prependTo( "#log" );
+			$( "#log" ).scrollTop( 0 );
+		}
+
+		$( "#txtSourceAddress").autocomplete({
+			source: function( request, response ) {
+				$.ajax({
+					type: "GET",
+					url: "autocomplete.php",					
+					data: {
+						query: request.term						
+					},
+					success: function( data ) {
+							dataset=data.split(';');							
+							if(dataset.length>0)
+							{
+								response( $.map( dataset, function( item ) {	
+								if(item.length>0) // this will take care of empty list item not to be shown
+									return {
+										//label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
+										value: item
+									}
+								
+							}));
+						}
+					}
+				});
+			},
+			minLength: 1,
+			max:2,
+			delay:1,
+			select: function( event, ui ) {
+				log( ui.item ?
+					"Selected: " + ui.item.label :
+					"Nothing selected, input was " + this.value);
+			},
+			open: function() {
+				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+			},
+			close: function() {
+				$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+			}
+		});
+		
+		$( "#txtDestinationAddress" ).autocomplete({
+			source: function( request, response ) {
+				$.ajax({
+					type: "GET",
+					url: "collocation.php",					
+					data: {
+						query: request.term						
+					},
+					success: function( data ) {
+							//alert(data);
+						    dataset=data.split(';');							
+							response( $.map( dataset, function( item ) {
+							if(item.length>0) 
+								return {
+									//label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
+									value: item
+								}
+						}));
+					}
+				});
+			},
+			minLength: 1,
+			max:2,
+			delay:1,
+			select: function( event, ui ) {
+				log( ui.item ?
+					"Selected: " + ui.item.label :
+					"Nothing selected, input was " + this.value);
+			},
+			open: function() {
+				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+			},
+			close: function() {
+				$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+			}
+		});
+
+	});
+
+</script>
+
+
+
+
+<!-- </form> -->
+
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+<table border='1' width="80%" style="margin-left:10%">
+<tr>
+<td><b>Ngrams</b> are useful for creating auto suggest feature while entering the data
+	<br/>
+	<span style='color:blue;font-weight:bold'>The n words come together</span>
+ </td>
+<td>Since the startup on 12/14, the outboard <b>pump bearing</b> vibrations have been increasing reaching ~2 mils on the morning of 12/16.Recent performance trends have been very steady, however following the startup on 12/13 and subsequently 12/14 the vibrations have increased
+</td>
+</tr>
+<tr>
+<td><b>Collocation</b> is useful for suggesting the related asset or condition that might be significant for this alert ..which can be considered while diagnosing the issue
+<br/>
+	<span style='color:blue;font-weight:bold'>The words may not come together</span>
+
+
+</td>
+
+<td>On 7/28, 2A and 2B LP Turbine AVG <b>Back Pressure</b> decreased from ~5.5  to ~3.25 inhg.  Tags also used in <b>Condenser</b>
+</td>
+</tr>
+
+
+
+
+
+</body>
+</html>
+
