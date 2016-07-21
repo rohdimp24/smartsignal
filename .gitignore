@@ -49,3 +49,7 @@ Temporary Items
 /*.csv
 /*.xls
 /*.arff
+/images
+/kmeans
+/lda
+/forGraph

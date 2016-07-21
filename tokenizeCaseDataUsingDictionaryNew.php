@@ -76,9 +76,9 @@ for($j=1;$j<=$fetchRowsNum;$j++)
 {
 	$fetchRow=mysql_fetch_row($fetchResult);
 	$details=$fetchRow[0];
-	#if($j<4)
-	#	continue;
-	if($j>11000)
+	if($j<1)
+		continue;
+	if($j>1000)
 	 	break;
 	else
 	{
@@ -108,6 +108,8 @@ for($j=1;$j<=$fetchRowsNum;$j++)
 		    $details=str_ireplace(",", ' ', $details);
 		    $details=str_ireplace("#", ' ', $details);
 		    $details=str_ireplace("-", ' ', $details);
+		    $details=str_ireplace("+", ' ', $details);
+		    $details=str_ireplace("*", ' ', $details);
 		    $details=str_ireplace("/", ' ', $details);
 		   # $details = preg_replace('/[0-9]+/', ' ', $details);
 
@@ -158,7 +160,9 @@ for($j=1;$j<=$fetchRowsNum;$j++)
 
 
 				//trigrams
-				if($i<($lenCase-3))
+				if($DEBUG_PRINT)				
+					echo "i=>".$i."<br/>";
+				if($i<=($lenCase-3))
 				{
 					//echo "<br/>inside trigram=>".$tempword;
 					if($firstword==" "||$secondword==" "||$thirdword==" ")
@@ -245,7 +249,7 @@ for($j=1;$j<=$fetchRowsNum;$j++)
 
 			$str=preg_replace('/[0-9]+/', ' ', $str);
 			echo "<b>Converted to =></b>".$str."<br/>-------------------------------------<br/>";
-			if(strlen(trim($str))>2)
+			/*if(strlen(trim($str))>2)
 			{
 				//enter to the sql
 				$query="UPDATE `crmcleanupnew` SET normalizedNGramDesc='".$str."' Where `sno`='".$j."'";
@@ -254,7 +258,7 @@ for($j=1;$j<=$fetchRowsNum;$j++)
 				{
 					echo $query;
 				}
-			}
+			}*/
 
 		}
 		

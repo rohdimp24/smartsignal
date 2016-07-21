@@ -7,7 +7,9 @@ require_once("login.php");
 
 
 
-$fp=fopen("cosineSimilarityMatrix.csv","r");
+#$fp=fopen("cosineSimilarityMatrix.csv","r");
+$fp=fopen("cosineMat13.csv","r");
+
 $arrfinal=array();
 $count=0;
 
@@ -33,7 +35,7 @@ print_r($arrMap);
 exit();
 */
 //create a map of clusters
-$fc=fopen("clustersFinal.txt","r");
+$fc=fopen("clustersFinalNew.txt","r");
 $arrClusterMap=array();
 while(($clusterDetail=fgets($fc))!=null)
 {
@@ -55,17 +57,17 @@ while(($details = fgets($fp))!=null){
 		
 		$arrTemp=explode(",",$details);
 		//print_r($arrTemp);
-		$lenArr=sizeof($arrTemp);
-		$doc=$count;
-		$clusterId=$arrClusterMap[$doc];
+		#$lenArr=sizeof($arrTemp);
+		#$doc=$count;
+		$clusterId=$arrClusterMap[$arrTemp[1]];
 		//echo $count;
-		$str='';
-		$arrSimilarDocs=array();
-		for($i=1;$i<$lenArr;$i++)
+		#$str='';
+		#$arrSimilarDocs=array();
+		/*for($i=1;$i<$lenArr;$i++)
 		{
 			//echo "Doc#".$i." =>";
-			if($arrTemp[$i]<50)
-			{
+			#if($arrTemp[$i]<60)
+			#{
 				//$score=number_format((float) $arrTemp[$i], 2, '.', '');
 				$score=round((float) $arrTemp[$i],2);
 				$obj=new SimilarDocument($i,$score);
@@ -73,26 +75,30 @@ while(($details = fgets($fp))!=null){
 				$str.="(".$i.":".$score."),";
 				//$str.="(".$i.":".$score."),";
 				array_push($arrSimilarDocs, $obj);
-			}
+			#}
 			
-		}
+		}*/
+		$score=round((float) $arrTemp[2],2);
+		#$obj=new SimilarDocument($arrTemp[1],$score);
+		#array_push($arrSimilarDocs, $obj);
+
 		//echo $arrMap[$doc]."=>".$str."<br/>";
 		
-		echo $doc."=>".json_encode($arrSimilarDocs)."=>".$clusterId."<br/>";
+		#echo $doc."=>".json_encode($arrSimilarDocs)."=>".$clusterId."<br/>";
+		echo $arrTemp[0]."=>".$arrTemp[1]."=>".$score."=>".$clusterId."<br/>";
 		//echo $doc."=>".$str."<br/>";
 		//echo $doc."=>".json_encode($arrSimilarDocs)."<br/>";
 		//print_r($arrTemp);
 
-		$query="INSERT INTO `casesimilarity`(`docId`, `similaritydata`,`cluster`) 
-			VALUES ('".$doc."','".json_encode($arrSimilarDocs)."','".$clusterId."')";
-		
-		//echo $query;	
+		$query="INSERT INTO `casesimilarity` VALUES ('".$arrTemp[0]."','".$arrTemp[1]."','".
+		$score."','".str_ireplace("\"", '', $arrTemp[3])."','".$clusterId."')";
 		$result=mysql_query($query);
 		if(!$result)
 			echo $query;
 		$count++;
 		//if($count>100)
 		//	break;
+		
 	}
 
 }
